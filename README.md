@@ -1,2 +1,2 @@
-# XII-Quiz-1
+# XII Quiz
 Partneship Final Accounts
