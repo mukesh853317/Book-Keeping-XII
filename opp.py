@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 
 # -----------------------------------------------------
 TEACHER_EMAIL = "mukeshamrutkar.shm@gmail.com" 
-EMAIL_PASSWORD = "Mukesh@9991"   
+EMAIL_PASSWORD = "gnjf jcxf oorg spcr"   
 
 def send_score_to_teacher(student_name, score, total):
     msg_content = f"Mukesh Amrutkar's Quiz!\n\nStudent Name: {student_name}\nTopic: Partnership Final Accounts\nScore: {score}/{total}"
