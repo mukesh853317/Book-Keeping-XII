@@ -6,8 +6,8 @@ from email.mime.text import MIMEText
 # १. Mitradnya Publication - Email Setup
 # -----------------------------------------------------
 # (येथे तुमचा खरा ईमेल आणि Gmail App Password टाका)
-TEACHER_EMAIL = "your_email@gmail.com" 
-EMAIL_PASSWORD = "your_app_password"   
+TEACHER_EMAIL = "mukeshamrutkar.shm@gmail.com" 
+EMAIL_PASSWORD = "Mukesh@9991"   
 
 def send_score_to_teacher(student_name, score, total):
     msg_content = f"Mitradnya Publication Alert!\n\nStudent Name: {student_name}\nTopic: Partnership Final Accounts\nScore: {score}/{total}"
