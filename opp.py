@@ -80,7 +80,7 @@ quiz_data = [
 # -----------------------------------------------------
 st.set_page_config(page_title="Mitradnya Online Exam", page_icon="📝")
 
-st.title("📚 Asst. Prof. Mukesh Amrutkar's - Online Exam")
+st.title("📚 Asst. Prof. Mukesh Amrutkar's - Online Revision Game")
 st.subheader("Subject: Book-Keeping & Accountancy")
 st.markdown("**Topic: Partnership Final Accounts (50 Marks)**")
 st.markdown("---")
@@ -103,7 +103,11 @@ st.markdown("---")
 # सबमिट बटण आणि निकाल 
 if st.button("🚀 Submit Exam"):
     if student_name == "":
+        student_division == "":
+        student_roll no. == "":
         st.warning("⚠️ Please enter your name first!")
+        st.warning("⚠️ Please enter your division first")
+        st.warning("⚠️ Please enter your roll no first!")
     else:
         score = 0
         total_questions = len(quiz_data)
