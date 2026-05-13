@@ -13,19 +13,42 @@ try:
     EMAIL_PASSWORD = st.secrets["EMAIL_PASSWORD"]
 except:
     EMAIL_PASSWORD = "" 
-    TEACHER_NAME = "Mukesh Sir"
+
+TEACHER_NAME = "Mukesh Sir"
 
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv('All in one.csv', encoding='utf-8')
+        # आधी utf-8 तपासून पाहू, एरर आला तर Windows च्या (cp1252) फॉरमॅटमध्ये वाचू
+        try:
+            df = pd.read_csv('All in one.csv', encoding='utf-8')
+        except UnicodeDecodeError:
+            df = pd.read_csv('All in one.csv', encoding='cp1252')
+            
+        # रिकाम्या जागा भरून काढण्यासाठी
         df.fillna("None", inplace=True) 
         return df
     except Exception as e:
-        st.error(f"CSV फाईल सापडली नाही: {e}")
+        st.error(f"Error loading CSV file: {e}")
         return None
 
 df = load_data()
+
+def send_score_to_teacher(student_name, div, roll, score, total, chapter, test_name):
+    msg_content = f"📚 Result Alert!\n\nStudent: {student_name}\nDiv: {div}\nRoll: {roll}\nChapter: {chapter}\nTest: {test_name}\nScore: {score}/{total}"
+    msg = MIMEText(msg_content)
+    msg['Subject'] = f"Exam Result: {student_name} ({div}) score {score}/{total}"
+    msg['From'] = TEACHER_NAME
+    msg['To'] = TEACHER_EMAIL
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(TEACHER_EMAIL, EMAIL_PASSWORD)
+        server.sendmail(TEACHER_EMAIL, TEACHER_EMAIL, msg.as_string())
+        server.quit()
+        return True
+    except:
+        return False
 
 # शिक्षक आणि विद्यार्थ्याला ईमेल पाठवण्यासाठी फंक्शन
 def send_detailed_email(receiver_email, student_name, div, roll, score, total, chapter, test_name, report_content, is_teacher=True):
@@ -55,7 +78,7 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 # २. वेबसाईट इंटरफेस
 # -----------------------------------------------------
 st.set_page_config(page_title="Mukesh Sir's Online Exam", page_icon="📝")
-st.sidebar.title("📚 Mitradnya Publication")
+st.sidebar.title("📚 Mitradnya Publication's (Mukesh Sir's) Online Test")
 
 if df is not None:
     chapters = df['No'].unique()
@@ -80,7 +103,7 @@ if df is not None:
     end_idx = start_idx + chunk_size
     current_quiz_df = chapter_questions.iloc[start_idx:end_idx]
     
-    st.title("📚 Mukesh Sir's Online Exam 📚")
+    st.title("📚 Mitradnya Publication's Online Examination Portal")
     st.subheader(f"Topic: {selected_chapter}")
     st.write(f"**Test: {selected_part} (20 Marks)**")
     
@@ -125,7 +148,7 @@ if df is not None:
             requests.get(f"{GOOGLE_SHEET_URL}?name={safe_name}&div={student_div}&roll={student_roll}&test={final_test_name}&score={score}")
             
             # २. शिक्षकाला सविस्तर रिपोर्ट पाठवणे
-            send_detailed_email(TE_EMAIL=TEACHER_EMAIL, receiver_email=TEACHER_EMAIL, student_name=student_name, div=student_div, roll=student_roll, score=score, total=len(current_quiz_df), chapter=selected_chapter, test_name=selected_part, report_content=detailed_report_text, is_teacher=True)
+            send_detailed_email(receiver_email=TEACHER_EMAIL, student_name=student_name, div=student_div, roll=student_roll, score=score, total=len(current_quiz_df), chapter=selected_chapter, test_name=selected_part, report_content=detailed_report_text, is_teacher=True)
             
             # ३. विद्यार्थ्याला सविस्तर रिपोर्ट पाठवणे
             if student_email:
