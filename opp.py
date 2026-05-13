@@ -1,6 +1,7 @@
 import streamlit as st
 import smtplib
 import requests
+import urllib.parse
 from email.mime.text import MIMEText
 
 # -----------------------------------------------------
@@ -28,7 +29,7 @@ def send_score_to_teacher(student_name, div, roll, score, total, test_name):
         return False
 
 # -----------------------------------------------------
-# २. सर्व १०० प्रश्नांचा मास्टर डेटाबेस (Select काढलेले आहेत)
+# २. सर्व १०० प्रश्नांचा मास्टर डेटाबेस
 # -----------------------------------------------------
 quiz_data = [
     # --- Basic 50 Questions ---
@@ -205,26 +206,26 @@ if st.button("🚀 Submit Exam"):
         # १. मुख्य निकाल दाखवणे
         st.success(f"🎉 Exam Submitted! Dear {student_name}, your Score is {score}/{total_questions}")
         
-        # २. Google Sheet मध्ये अचूक डेटा पाठवणे (Simple Replace Method)
+        # २. Google Sheet मध्ये डेटा पाठवणे
         with st.spinner("Saving data to Mitradnya Excel..."):
-            GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7BoAF9_uf5pp1kM7XhpsIGb7zfMeX708BAFTjuoDLCUK4Yhpm-kbX2TevEeB_K5Yq/exec"
+            
+            # --- तुमची नवीन लिंक फक्त या खालील दोन अवतरण चिन्हांमध्ये (" ") टाका ---
+            GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw020k-gpjkHhuBF9L6gZo83qdoaaXgvRPCBOKTUrf0zFrag7446qUA0briaqBTOz3w/exec"
             
             try:
-                # नावांमधील स्पेस मॅन्युअली काढण्याची एकदम सुरक्षित पद्धत 
-                s_name = student_name.replace(" ", "%20")
-                s_div = student_division.replace(" ", "%20")
-                s_roll = student_roll_no.replace(" ", "%20")
-                s_test = topic_name.replace(" ", "%20")
-                s_score = f"{score}/{total_questions}"
+                safe_name = urllib.parse.quote(student_name)
+                safe_div = urllib.parse.quote(student_division)
+                safe_roll = urllib.parse.quote(student_roll_no)
+                safe_test = urllib.parse.quote(topic_name)
+                safe_score = urllib.parse.quote(f"{score}/{total_questions}")
                 
-                final_url = f"{GOOGLE_SHEET_URL}?name={s_name}&div={s_div}&roll={s_roll}&test={s_test}&score={s_score}"
+                final_url = f"{GOOGLE_SHEET_URL}?name={safe_name}&div={safe_div}&roll={safe_roll}&test={safe_test}&score={safe_score}"
                 
                 res = requests.get(final_url)
-                
                 if res.status_code == 200:
                     st.info("📊 Data successfully added to your Excel report.")
                 else:
-                    st.error(f"Google Sheet Error: {res.status_code}")
+                    st.error(f"Google Sheet Error: Status Code {res.status_code}")
             except Exception as e:
                 st.error(f"Data saving failed Error: {e}")
 
