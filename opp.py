@@ -1,6 +1,7 @@
 import streamlit as st
 import smtplib
 import requests
+import urllib.parse
 from email.mime.text import MIMEText
 
 # -----------------------------------------------------
@@ -206,7 +207,7 @@ if st.button("🚀 Submit Exam"):
         # १. मुख्य निकाल दाखवणे
         st.success(f"🎉 Exam Submitted! Dear {student_name}, your Score is {score}/{total_questions}")
         
-        # २. Google Sheet मध्ये डेटा पाठवणे (येथे तुमची लिंक अगदी बरोबर टाकली आहे)
+        # २. Google Sheet मध्ये अचूक डेटा पाठवणे (urllib वापरून)
         with st.spinner("Saving data to Mitradnya Excel..."):
             GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7BoAF9_uf5pp1kM7XhpsIGb7zfMeX708BAFTjuoDLCUK4Yhpm-kbX2TevEeB_K5Yq/exec"
             
@@ -218,14 +219,18 @@ if st.button("🚀 Submit Exam"):
                 "score": f"{score}/{total_questions}"
             }
             try:
-                requests.get(GOOGLE_SHEET_URL, params=data_to_send)
+                # गुगलच्या सिक्युरिटीमुळे डेटा गहाळ होऊ नये म्हणून थेट लिंक तयार करणे
+                query_string = urllib.parse.urlencode(data_to_send)
+                final_url = f"{GOOGLE_SHEET_URL}?{query_string}"
+                
+                requests.get(final_url)
                 st.info("📊 Data successfully added to your Excel report.")
-            except:
+            except Exception as e:
                 st.error("Data saving failed, but email will be sent.")
 
         st.markdown("---")
         st.markdown("### 📊 तुमचा सविस्तर निकाल (Detailed Report):")
-       
+        
         # ३. लाल आणि हिरव्या रंगात उत्तरे दाखवणे
         for i in range(total_questions):
             user_ans = user_answers[i]
