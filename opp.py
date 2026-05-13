@@ -5,16 +5,16 @@ from email.mime.text import MIMEText
 # -----------------------------------------------------
 # १. Mitradnya Publication - Email Setup
 # -----------------------------------------------------
-TEACHER_EMAIL = "mukeshamrutkar.shm@gmail.com" 
-EMAIL_PASSWORD = "gnjf jcxf oorg spcr"   
+TEACHER_EMAIL = "vidyarthi.mitradnyapublications@gmail.com" 
+EMAIL_PASSWORD = "vhoc lltr ejwu qomk"   
 TEACHER_NAME = "Mukesh Arvind Amrutkar"
 
 def send_score_to_teacher(student_name, div, roll, score, total, test_name):
-    msg_content = f"📚 Mitradnya Publication's Result Alert 📚!\n\nStudent Name: {student_name}\nDivision: {div}\nRoll No: {roll}\nTopic: Partnership Final Accounts\nTest: {test_name}\nScore: {score}/{total}"
+    msg_content = f"📚 Online Exam's Result Alert 📚!\n\nStudent Name: {student_name}\nDivision: {div}\nRoll No: {roll}\nTopic: Partnership Final Accounts\nTest: {test_name}\nScore: {score}/{total}"
     msg = MIMEText(msg_content)
     msg['Subject'] = f"New Quiz Result: {student_name} ({div}-{roll}) scored {score}/{total} in {test_name}"
-    msg['From'] = TEACHER_EMAIL
-    msg['To'] = TEACHER_EMAIL
+    msg['From'] = TEACHER_NAME
+    msg['To'] = TEACHER_NAME
 
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -138,14 +138,14 @@ quiz_data = [
 # -----------------------------------------------------
 # ३. वेबसाईटचे डिझाईन आणि मेनू बार (Menu Bar)
 # -----------------------------------------------------
-st.set_page_config(page_title="Mitradnya Publication's Online Exam", page_icon="📝")
+st.set_page_config(page_title="Mukesh Sir's Online Exam", page_icon="📝")
 
-st.sidebar.title("📚 Mitradnya Publication's 📚")
+st.sidebar.title("📚 Mitradnya Publication's (Mukesh Sir's) Online Exam 📚")
 st.sidebar.markdown("---")
 st.sidebar.subheader("Select Your Exam:")
 test_choice = st.sidebar.radio("Choose a Test Part:", [
     "Test 1: Basics & Theory (Q1-Q25)",
-    "Test 2: Trading vs P&L (Q26-Q50)",
+    "Test 2: Trading & P&L (Q26-Q50)",
     "Test 3: Adjustments & Rules (Q51-Q75)",
     "Test 4: Advanced Concepts (Q76-Q100)"
 ])
@@ -155,9 +155,9 @@ st.sidebar.info("Developed by Mukesh Sir (9130103386)")
 if test_choice == "Test 1: Basics & Theory (Q1-Q25)":
     current_quiz = quiz_data[0:25]
     topic_name = "Part 1: Basics & Theory"
-elif test_choice == "Test 2: Trading vs P&L (Q26-Q50)":
+elif test_choice == "Test 2: Trading & P&L (Q26-Q50)":
     current_quiz = quiz_data[25:50]
-    topic_name = "Part 2: Trading vs P&L Concepts"
+    topic_name = "Part 2: Trading & P&L Concepts"
 elif test_choice == "Test 3: Adjustments & Rules (Q51-Q75)":
     current_quiz = quiz_data[50:75]
     topic_name = "Part 3: Adjustments & Rules"
@@ -165,7 +165,7 @@ else:
     current_quiz = quiz_data[75:100]
     topic_name = "Part 4: Advanced Concepts"
 
-st.title("📚 Mitradnya Publication's - Online Exam 📚")
+st.title("📚 Mukesh Sir's - Online Exam 📚")
 st.subheader("Subject: Book-Keeping & Accountancy")
 st.markdown(f"**Topic: Partnership Final Accounts - {topic_name} (25 Marks)**")
 
@@ -227,7 +227,7 @@ if st.button("🚀 Submit Exam"):
             if student_email != "":
                 try:
                     student_msg = MIMEText(f"Dear {student_name},\n\nYour Score for {topic_name} is {score}/{total_questions}.\n\nBelow is your detailed report:\n\n{report_text}\n\nKeep Studying!\n- Mukesh Arvind Amrutkar (9130103386)")
-                    student_msg['Subject'] = f"Mitradnya Publication's - Your Exam Result ({score}/{total_questions})"
+                    student_msg['Subject'] = f"Your Mitradnya Publications Online Exam Result ({score}/{total_questions})"
                     student_msg['From'] = TEACHER_NAME
                     student_msg['To'] = student_email
                     
