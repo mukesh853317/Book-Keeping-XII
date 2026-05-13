@@ -88,7 +88,7 @@ if df is not None:
     st.write(f"**{selected_part} (20 Marks / 20 Minutes)**")
     
     # --- विद्यार्थ्यांची माहिती ---
-    st.info("⚠️ सूचना: आधी तुमची माहिती भरा आणि मग 'परीक्षेला सुरुवात करा' वर क्लिक करा. त्यानंतरच तुमची वेळ सुरु होईल.")
+    st.info("⚠️ Instructions: Fill in your information first and then click on 'Start Exam'. Only then will your time start.")
     student_name = st.text_input("👤 Full Name:")
     student_div = st.text_input("🏫 Division (A/B/C):")
     student_roll = st.text_input("🔢 Roll No:")
@@ -96,7 +96,7 @@ if df is not None:
     st.markdown("---")
     
     # --- Start Test Button & Timer ---
-    start_test = st.checkbox("🟢 परीक्षेला सुरुवात करा (Start Test)")
+    start_test = st.checkbox("🟢 Start Test")
     
     if start_test:
         test_id = f"{selected_chapter}_{selected_part}".replace(" ", "_")
@@ -122,12 +122,12 @@ if df is not None:
                 
                 if (distance <= 0) {{
                     clearInterval(timerId);
-                    elem.innerHTML = "⚠️ वेळ संपली! (Time Up) कृपया लगेच Submit करा.";
+                    elem.innerHTML = "⚠️ Time Up! Please Submit.";
                     elem.parentElement.style.backgroundColor = "#E74C3C";
                 }} else {{
                     var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     var s = Math.floor((distance % (1000 * 60)) / 1000);
-                    elem.innerHTML = "⏱️ वेळ शिल्लक: " + m + " मि " + s + " सेकंद";
+                    elem.innerHTML = "⏱️ Time: " + m + "M" + s + "S";
                 }}
             }}, 1000);
         </script>
@@ -140,7 +140,7 @@ if df is not None:
             
             raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
             
-            # --- Duplicate Options Fix (सारखे पर्याय दुरुस्त करणे) ---
+            # --- Duplicate Options Fix  ---
             unique_options = []
             for opt in raw_options:
                 while opt in unique_options:
