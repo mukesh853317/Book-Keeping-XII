@@ -373,30 +373,35 @@ st.sidebar.markdown("---")
 # --- टेस्ट पार्ट निवडण्याची सिस्टीम ---
 st.sidebar.subheader("2. Select Test Part:")
 test_choice = st.sidebar.radio("Choose Questions:", [
-    "Test 1: Part 1 (Q1-Q25)",
-    "Test 2: Part 2 (Q26-Q50)",
-    "Test 3: Part 3 (Q51-Q75)",
-    "Test 4: Part 4 (Q76-Q100)"
+    "Test 1: Part 1 (Q1-Q20)",
+    "Test 2: Part 2 (Q21-Q40)",
+    "Test 3: Part 3 (Q41-Q60)",
+    "Test 4: Part 4 (Q61-Q80)",
+    "Test 5: Part 5 (Q81-Q100)"
 ])
 st.sidebar.markdown("---")
 st.sidebar.info("Developed by Mukesh Sir (9130103386)")
 
-if test_choice == "Test 1: Part 1 (Q1-Q25)":
-    current_quiz = active_quiz_data[0:25]
-    topic_name = "Part 1 (Q1-Q25)"
-elif test_choice == "Test 2: Part 2 (Q26-Q50)":
-    current_quiz = active_quiz_data[25:50]
-    topic_name = "Part 2 (Q26-Q50)"
-elif test_choice == "Test 3: Part 3 (Q51-Q75)":
-    current_quiz = active_quiz_data[50:75]
-    topic_name = "Part 3 (Q51-Q75)"
+# --- प्रश्नांची निवड (Corrected Logic) ---
+if test_choice == "Test 1: Part 1 (Q1-Q20)":
+    current_quiz = active_quiz_data[0:20]
+    topic_name = "Part 1 (Q1-Q20)"
+elif test_choice == "Test 2: Part 2 (Q21-Q40)":
+    current_quiz = active_quiz_data[20:40]
+    topic_name = "Part 2 (Q21-Q40)"
+elif test_choice == "Test 3: Part 3 (Q41-Q60)":
+    current_quiz = active_quiz_data[40:60]
+    topic_name = "Part 3 (Q41-Q60)"
+elif test_choice == "Test 4: Part 4 (Q61-Q80)":
+    current_quiz = active_quiz_data[60:80]
+    topic_name = "Part 4 (Q61-Q80)"
 else:
-    current_quiz = active_quiz_data[75:100]
-    topic_name = "Part 4 (Q76-Q100)"
+    current_quiz = active_quiz_data[80:100]
+    topic_name = "Part 5 (Q81-Q100)"
 
 st.title("📚 Mukesh Sir's - Online Exam 📚")
 st.subheader(f"Topic: {selected_chapter}")
-st.markdown(f"**Test: {topic_name} (25 Marks)**")
+st.markdown(f"**Test: {topic_name} (20 Marks)**")
 
 st.markdown("---")
 student_name = st.text_input("👤 Enter Your Full Name:")
