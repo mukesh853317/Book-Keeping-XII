@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 import pandas as pd
 import smtplib
 import requests
@@ -115,9 +116,14 @@ if df is not None:
     user_answers = []
     for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
         # इथे आपण 'Q' आणि आपोआप येणारा नंबर जोडला आहे, सोबत एक छान चिन्ह दिले आहे
-        st.write(f"**Q. {idx}. {row['Question']}**")
+        st.write(f"**Q. {idx}: {row['Question']}**")
         
         options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
+        # --- पर्याय शफल (Shuffle) करण्याची सिस्टीम ---
+        random.seed(i) # यामुळे मुले क्लिक करताना पर्याय पुन्हा हलणार नाहीत
+        random.shuffle(options)
+        random.seed() # मूळ स्थितीत आणण्यासाठी
+        
         ans = st.radio("Options:", options, key=f"q_{i}", index=None, label_visibility="collapsed")
         user_answers.append(ans)
         st.write("")
