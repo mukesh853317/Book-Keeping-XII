@@ -1,10 +1,10 @@
 import streamlit as st
-import random
 import pandas as pd
 import smtplib
 import requests
 import urllib.parse
 from email.mime.text import MIMEText
+import random
 
 # -----------------------------------------------------
 # १. Mitradnya Publication - Setup
@@ -20,13 +20,10 @@ TEACHER_NAME = "Mukesh Sir"
 @st.cache_data
 def load_data():
     try:
-        # आधी utf-8 तपासून पाहू, एरर आला तर Windows च्या (cp1252) फॉरमॅटमध्ये वाचू
         try:
             df = pd.read_csv('All in one.csv', encoding='utf-8')
         except UnicodeDecodeError:
             df = pd.read_csv('All in one.csv', encoding='cp1252')
-            
-        # रिकाम्या जागा भरून काढण्यासाठी
         df.fillna("None", inplace=True) 
         return df
     except Exception as e:
@@ -35,29 +32,12 @@ def load_data():
 
 df = load_data()
 
-def send_score_to_teacher(student_name, div, roll, score, total, chapter, test_name):
-    msg_content = f"📚 Result Alert!\n\nStudent: {student_name}\nDiv: {div}\nRoll: {roll}\nChapter: {chapter}\nTest: {test_name}\nScore: {score}/{total}"
-    msg = MIMEText(msg_content)
-    msg['Subject'] = f"Exam Result: {student_name} ({div}) score {score}/{total}"
-    msg['From'] = TEACHER_NAME
-    msg['To'] = TEACHER_EMAIL
-    try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(TEACHER_EMAIL, EMAIL_PASSWORD)
-        server.sendmail(TEACHER_EMAIL, TEACHER_EMAIL, msg.as_string())
-        server.quit()
-        return True
-    except:
-        return False
-
-# शिक्षक आणि विद्यार्थ्याला ईमेल पाठवण्यासाठी फंक्शन
 def send_detailed_email(receiver_email, student_name, div, roll, score, total, chapter, test_name, report_content, is_teacher=True):
     if is_teacher:
         subject = f"New Result: {student_name} ({div}-{roll}) - {score}/{total}"
         body = f"📚 Result Alert for Mukesh Sir!\n\nStudent: {student_name}\nDivision: {div}\nRoll No: {roll}\nChapter: {chapter}\nTest: {test_name}\nScore: {score}/{total}\n\n--- Detailed Report ---\n{report_content}"
     else:
-        subject = f"Your Online Exam Result (Mitradnya Publication's) ({score}/{total})"
+        subject = f"Your Exam Result - (Mitradnya Publication's) ({score}/{total})"
         body = f"Dear {student_name},\n\nYou have successfully completed the online test.\n\nChapter: {chapter}\nTest: {test_name}\nYour Score: {score}/{total}\n\n--- Detailed Performance ---\n{report_content}\n\nKeep Studying!\n- Mukesh Sir"
 
     msg = MIMEText(body)
@@ -72,14 +52,13 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
         server.sendmail(TEACHER_EMAIL, receiver_email, msg.as_string())
         server.quit()
         return True
-    except:
-        return False
+    except: return False
 
 # -----------------------------------------------------
 # २. वेबसाईट इंटरफेस
 # -----------------------------------------------------
 st.set_page_config(page_title="Mukesh Sir's Online Exam", page_icon="📝")
-st.sidebar.title("📚 Mitradnya Publication's (Mukesh Sir's) Online Test")
+st.sidebar.title("📚 Mitradnya Publication's Mukesh Sir's Online Test Series")
 
 if df is not None:
     chapters = df['No'].unique()
@@ -90,7 +69,7 @@ if df is not None:
     
     st.sidebar.markdown("---")
     
-    # २०-२० प्रश्नांचे भाग (२० च्या गटात विभागणी)
+    # २०-२० प्रश्नांचे भाग
     chunk_size = 20
     test_parts = []
     for i in range(0, total_q, chunk_size):
@@ -105,24 +84,33 @@ if df is not None:
     
     st.title("📚 Mukesh Sir's Online Examination Portal")
     st.subheader(f"Topic: {selected_chapter}")
-    st.write(f"**Test: {selected_part} (20 Marks)**")
+    st.write(f"**{selected_part} (20 Marks)**")
     
-    student_name = st.text_input("👤 Enter Your Full Name:")
-    student_div = st.text_input("🏫 Enter Your Division (e.g., A, B, C):")
-    student_roll = st.text_input("🔢 Enter Your Roll No:")
-    student_email = st.text_input("📧 Enter Your Email ID (To Receive Result):")
+    student_name = st.text_input("👤 Full Name:")
+    student_div = st.text_input("🏫 Division (A/B/C):")
+    student_roll = st.text_input("🔢 Roll No:")
+    student_email = st.text_input("📧 Email ID:")
     st.markdown("---")
     
     user_answers = []
     for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
-        # इथे आपण 'Q' आणि आपोआप येणारा नंबर जोडला आहे, सोबत एक छान चिन्ह दिले आहे
-        st.write(f"**Q. {idx}: {row['Question']}**")
+        st.write(f"**Q{idx}. 🔹 {row['Question']}**")
         
-        options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
-        # --- पर्याय शफल (Shuffle) करण्याची सिस्टीम ---
-        random.seed(i) # यामुळे मुले क्लिक करताना पर्याय पुन्हा हलणार नाहीत
+        raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
+        
+        # --- Duplicate Options Fix (सारखे पर्याय दुरुस्त करणे) ---
+        unique_options = []
+        for opt in raw_options:
+            while opt in unique_options:
+                opt += " "  # Duplicate असल्यास एक space वाढवणे
+            unique_options.append(opt)
+        
+        options = unique_options
+        
+        # --- पर्याय शफल (Shuffle) ---
+        random.seed(i)
         random.shuffle(options)
-        random.seed() # मूळ स्थितीत आणण्यासाठी
+        random.seed()
         
         ans = st.radio("Options:", options, key=f"q_{i}", index=None, label_visibility="collapsed")
         user_answers.append(ans)
@@ -143,16 +131,13 @@ if df is not None:
                     status = "✅ Correct"
                 else:
                     status = f"❌ Wrong (Correct: {correct_ans})"
-                
                 detailed_report_text += f"Q: {row['Question']}\nYour Ans: {user_ans}\nStatus: {status}\n\n"
             
-            st.success(f"🎉 Exam Submitted! Score: {score}/{len(current_quiz_df)}")
+            st.success(f"🎉 Result: {score}/{len(current_quiz_df)}")
             
-            # १. Google Sheet अपडेट (शिक्षक अहवालासाठी)
+            # Google Sheet Update
             with st.spinner("Saving data to Excel..."):
                 GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw7BoAF9_uf5pp1kM7XhpsIGb7zfMeX708BAFTjuoDLCUK4Yhpm-kbX2TevEeB_K5Yq/exec"
-                
-                # सुरक्षित URL तयार करणे (प्रत्येक शब्दातील Space हाताळण्यासाठी)
                 safe_name = urllib.parse.quote(str(student_name))
                 safe_div = urllib.parse.quote(str(student_div))
                 safe_roll = urllib.parse.quote(str(student_roll))
@@ -169,22 +154,20 @@ if df is not None:
                         st.error("⚠️ Excel मध्ये सेव्ह करताना अडचण आली.")
                 except Exception as e:
                     st.error(f"⚠️ Excel Connection Error: {e}")
-          
-            # २. शिक्षकाला सविस्तर रिपोर्ट पाठवणे
-            send_detailed_email(receiver_email=TEACHER_EMAIL, student_name=student_name, div=student_div, roll=student_roll, score=score, total=len(current_quiz_df), chapter=selected_chapter, test_name=selected_part, report_content=detailed_report_text, is_teacher=True)
             
-            # ३. विद्यार्थ्याला सविस्तर रिपोर्ट पाठवणे
+            # Send Emails
+            send_detailed_email(TEACHER_EMAIL, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, True)
+            
             if student_email:
-                send_detailed_email(receiver_email=student_email, student_name=student_name, div=student_div, roll=student_roll, score=score, total=len(current_quiz_df), chapter=selected_chapter, test_name=selected_part, report_content=detailed_report_text, is_teacher=False)
+                send_detailed_email(student_email, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, False)
                 st.info(f"📧 Detailed report sent to {student_email}")
             
-            # ४. स्क्रीनवर सविस्तर निकाल दाखवणे
             st.markdown("---")
-            st.markdown("### 📊 Your Detailed Performance:")
+            st.markdown("### 📊 Detailed Performance:")
             for idx, (i, row) in enumerate(current_quiz_df.reset_index().iterrows()):
-                if user_answers[idx] == correct_answers[idx]:
+                if str(user_answers[idx]).strip() == correct_answers[idx]:
                     st.success(f"Q: {row['Question']}\n\n✅ Your Ans: {user_answers[idx]}")
                 else:
                     st.error(f"Q: {row['Question']}\n\n❌ Your Ans: {user_answers[idx]}\n\n🎯 Correct: {correct_answers[idx]}")
         else:
-            st.warning("⚠️ कृपया सर्व माहिती भरा आणि सर्व प्रश्न सोडवा.")
+            st.warning("⚠️ Please fill all details and answer all questions.")
