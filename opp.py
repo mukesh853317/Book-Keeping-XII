@@ -58,8 +58,8 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 # -----------------------------------------------------
 # 2. Website Interface & Session State Initialization
 # -----------------------------------------------------
-st.set_page_config(page_title="Mukesh Sir's Online Exam", page_icon="📝")
-st.sidebar.title("📚 Mitradnya Publication's Online Test Series")
+st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝")
+st.sidebar.title("📚 Mitradnya Publication's Online Test Series 📚")
 
 # Initialize Session State for Test Locking
 if 'test_status' not in st.session_state:
@@ -90,7 +90,7 @@ if df is not None:
     end_idx = start_idx + chunk_size
     current_quiz_df = chapter_questions.iloc[start_idx:end_idx]
     
-    st.title("📚 Mukesh Sir's Online Examination Portal")
+    st.title("📚 Mukesh Sir's Online Examination Portal 📚")
     st.subheader(f"Topic: {selected_chapter}")
     st.write(f"**{selected_part} (20 Marks / 20 Minutes)**")
     
