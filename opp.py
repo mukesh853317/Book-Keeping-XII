@@ -56,7 +56,7 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
         subject = f"New Result: {student_name} ({div}-{roll}) - {score}/{total}"
         body = f"📚 Result Alert for Mukesh Sir!\n\nStudent: {student_name}\nDivision: {div}\nRoll No: {roll}\nChapter: {chapter}\nTest: {test_name}\nScore: {score}/{total}\n\n--- Detailed Report ---\n{report_content}"
     else:
-        subject = f"Your Exam Result - Mitradnya Publications ({score}/{total})"
+        subject = f"Your Online Exam Result (Mitradnya Publication's) ({score}/{total})"
         body = f"Dear {student_name},\n\nYou have successfully completed the online test.\n\nChapter: {chapter}\nTest: {test_name}\nYour Score: {score}/{total}\n\n--- Detailed Performance ---\n{report_content}\n\nKeep Studying!\n- Mukesh Sir"
 
     msg = MIMEText(body)
@@ -93,8 +93,7 @@ if df is not None:
     chunk_size = 20
     test_parts = []
     for i in range(0, total_q, chunk_size):
-        end = min(i + chunk_size, total_q)
-        test_parts.append(f"Part {i//chunk_size + 1} (Q{i+1}-Q{end})")
+        test_parts.append(f"Test {i//chunk_size + 1}")
         
     selected_part = st.sidebar.radio("2. Select Test Part:", test_parts)
     
@@ -103,7 +102,7 @@ if df is not None:
     end_idx = start_idx + chunk_size
     current_quiz_df = chapter_questions.iloc[start_idx:end_idx]
     
-    st.title("📚 Mitradnya Publication's Online Examination Portal")
+    st.title("📚 Mukesh Sir's Online Examination Portal")
     st.subheader(f"Topic: {selected_chapter}")
     st.write(f"**Test: {selected_part} (20 Marks)**")
     
