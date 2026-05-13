@@ -5,8 +5,8 @@ from email.mime.text import MIMEText
 # -----------------------------------------------------
 # १. Mitradnya Publication - Email Setup
 # -----------------------------------------------------
-TEACHER_EMAIL = "mukeshamrutkar.shm@gmail.com" 
-EMAIL_PASSWORD = "gnjf jcxf oorg spcr"   
+TEACHER_EMAIL = "your_email@gmail.com" 
+EMAIL_PASSWORD = "your_app_password"   
 
 def send_score_to_teacher(student_name, div, roll, score, total):
     msg_content = f"📚 Mitradnya Publication Alert!\n\nStudent Name: {student_name}\nDivision: {div}\nRoll No: {roll}\nTopic: Partnership Final Accounts\nScore: {score}/{total}"
@@ -26,7 +26,10 @@ def send_score_to_teacher(student_name, div, roll, score, total):
         return False
 
 # -----------------------------------------------------
+# २. सर्व १०० प्रश्नांचा डेटाबेस (Master List)
+# -----------------------------------------------------
 quiz_data = [
+    # --- Basic 50 Questions ---
     {"q": "1. The Indian Partnership Act was passed in the year:", "options": ["Select", "1923", "1932", "1956", "2013"], "ans": "1932"},
     {"q": "2. The liability of partners in a standard partnership firm is:", "options": ["Select", "Limited", "Unlimited", "Zero", "Joint only"], "ans": "Unlimited"},
     {"q": "3. The document containing the terms of the partnership agreement is called:", "options": ["Select", "Partnership Deed", "Prospectus", "Articles", "Memorandum"], "ans": "Partnership Deed"},
@@ -76,7 +79,9 @@ quiz_data = [
     {"q": "47. Balance Sheet is a statement showing:", "options": ["Select", "Income & Expenses", "Financial Position", "Cash flow", "Production"], "ans": "Financial Position"},
     {"q": "48. Factory lighting is debited to:", "options": ["Select", "Trading A/c", "Profit & Loss A/c", "Capital A/c", "Balance Sheet"], "ans": "Trading A/c"},
     {"q": "49. Office lighting is debited to:", "options": ["Select", "Trading A/c", "Profit & Loss A/c", "Capital A/c", "Balance Sheet"], "ans": "Profit & Loss A/c"},
-    {"q": "50. An amount which cannot be recovered from Debtors is called:", "options": ["Select", "Discount", "Bad Debts", "Draw# ---------------- Hidden Adjustments ----------------
+    {"q": "50. An amount which cannot be recovered from Debtors is called:", "options": ["Select", "Discount", "Bad Debts", "Drawings", "Charity"], "ans": "Bad Debts"},
+
+    # --- Advanced 51 to 100 Questions ---
     {"q": "51. If 'Rent (for 10 months) ₹10,000' is given in the Trial Balance, what is the Outstanding Rent amount and for how many months?", "options": ["Select", "2 months, ₹2,000", "1 month, ₹1,000", "2 months, ₹1,000", "No Outstanding"], "ans": "2 months, ₹2,000"},
     {"q": "52. If 'Insurance (paid for 15 months w.e.f. 1st April) ₹15,000' is given (Accounting year ends 31st March), what is the Prepaid Insurance?", "options": ["Select", "₹5,000", "₹3,000", "₹12,000", "₹1,000"], "ans": "₹3,000"},
     {"q": "53. If 'Advertisement (for 3 years) ₹30,000' is given, what amount will be charged to the Profit & Loss A/c for the current year?", "options": ["Select", "₹30,000", "₹15,000", "₹10,000", "₹20,000"], "ans": "₹10,000"},
@@ -134,12 +139,11 @@ quiz_data = [
 # -----------------------------------------------------
 st.set_page_config(page_title="Mitradnya Online Exam", page_icon="📝")
 
-st.title("📚 Mitradnya Publications - Online Exam")
+st.title("📚 Mitradnya Publication - Online Exam")
 st.subheader("Subject: Book-Keeping & Accountancy")
 st.markdown("**Topic: Partnership Final Accounts (100 Marks)**")
 
 st.markdown("---")
-# विद्यार्थ्याकडून माहिती घेणे
 student_name = st.text_input("👤 Enter Your Full Name:")
 student_division = st.text_input("🏫 Enter Your Division (e.g., A, B, C):")
 student_roll_no = st.text_input("🔢 Enter Your Roll No:")
@@ -155,7 +159,6 @@ for index, item in enumerate(quiz_data):
 
 st.markdown("---")
 
-# सबमिट बटण आणि तपासणी
 if st.button("🚀 Submit Exam"):
     if student_name == "":
         st.warning("⚠️ Please enter your Name first!")
