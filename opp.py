@@ -5,6 +5,7 @@ import requests
 import urllib.parse
 from email.mime.text import MIMEText
 import random
+import streamlit.components.v1 as components
 
 # -----------------------------------------------------
 # १. Mitradnya Publication - Setup
@@ -84,90 +85,135 @@ if df is not None:
     
     st.title("📚 Mukesh Sir's Online Examination Portal")
     st.subheader(f"Topic: {selected_chapter}")
-    st.write(f"**{selected_part} (20 Marks)**")
+    st.write(f"**{selected_part} (20 Marks / 20 Minutes)**")
     
+    # --- विद्यार्थ्यांची माहिती ---
+    st.info("⚠️ सूचना: आधी तुमची माहिती भरा आणि मग 'परीक्षेला सुरुवात करा' वर क्लिक करा. त्यानंतरच तुमची वेळ सुरु होईल.")
     student_name = st.text_input("👤 Full Name:")
     student_div = st.text_input("🏫 Division (A/B/C):")
     student_roll = st.text_input("🔢 Roll No:")
     student_email = st.text_input("📧 Email ID:")
     st.markdown("---")
     
-    user_answers = []
-    for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
-        st.write(f"**Q: {idx}. {row['Question']}**")
+    # --- Start Test Button & Timer ---
+    start_test = st.checkbox("🟢 परीक्षेला सुरुवात करा (Start Test)")
+    
+    if start_test:
+        test_id = f"{selected_chapter}_{selected_part}".replace(" ", "_")
         
-        raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
+        # आकर्षक टायमर (HTML/JS)
+        timer_code = f"""
+        <div style="background-color:#1B4F72; color:white; padding:10px; border-radius:8px; text-align:center; font-size:22px; font-weight:bold; font-family:sans-serif; border: 2px solid #AED6F1; box-shadow: 2px 2px 5px grey;">
+            <span id="time">लोड होत आहे...</span>
+        </div>
+        <script>
+            var testId = "{test_id}";
+            var endTime = sessionStorage.getItem("examEndTime_" + testId);
+            
+            if (!endTime) {{
+                endTime = new Date().getTime() + 20 * 60 * 1000; // 20 minutes
+                sessionStorage.setItem("examEndTime_" + testId, endTime);
+            }}
+            
+            var elem = document.getElementById('time');
+            var timerId = setInterval(function() {{
+                var now = new Date().getTime();
+                var distance = endTime - now;
+                
+                if (distance <= 0) {{
+                    clearInterval(timerId);
+                    elem.innerHTML = "⚠️ वेळ संपली! (Time Up) कृपया लगेच Submit करा.";
+                    elem.parentElement.style.backgroundColor = "#E74C3C";
+                }} else {{
+                    var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var s = Math.floor((distance % (1000 * 60)) / 1000);
+                    elem.innerHTML = "⏱️ वेळ शिल्लक: " + m + " मि " + s + " सेकंद";
+                }}
+            }}, 1000);
+        </script>
+        """
+        components.html(timer_code, height=70)
         
-        # --- Duplicate Options Fix (सारखे पर्याय दुरुस्त करणे) ---
-        unique_options = []
-        for opt in raw_options:
-            while opt in unique_options:
-                opt += " "  # Duplicate असल्यास एक space वाढवणे
-            unique_options.append(opt)
-        
-        options = unique_options
-        
-        # --- पर्याय शफल (Shuffle) ---
-        random.seed(i)
-        random.shuffle(options)
-        random.seed()
-        
-        ans = st.radio("Options:", options, key=f"q_{i}", index=None, label_visibility="collapsed")
-        user_answers.append(ans)
-        st.write("")
+        user_answers = []
+        for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
+            st.write(f"**Q: {idx}. {row['Question']}**")
+            
+            raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
+            
+            # --- Duplicate Options Fix (सारखे पर्याय दुरुस्त करणे) ---
+            unique_options = []
+            for opt in raw_options:
+                while opt in unique_options:
+                    opt += " "  # Duplicate असल्यास एक space वाढवणे
+                unique_options.append(opt)
+            
+            options = unique_options
+            
+            # --- पर्याय शफल (Shuffle) ---
+            random.seed(i)
+            random.shuffle(options)
+            random.seed()
+            
+            ans = st.radio("Options:", options, key=f"q_{i}", index=None, label_visibility="collapsed")
+            user_answers.append(ans)
+            st.write("")
 
-    if st.button("🚀 Submit Exam"):
-        if student_name and student_div and student_roll and None not in user_answers:
-            score = 0
-            detailed_report_text = ""
-            correct_answers = current_quiz_df['Correct Answer (Full Text)'].astype(str).str.strip().values
-            
-            for idx, (i, row) in enumerate(current_quiz_df.iterrows()):
-                user_ans = str(user_answers[idx]).strip()
-                correct_ans = str(correct_answers[idx]).strip()
+        if st.button("🚀 Submit Exam"):
+            if student_name and student_div and student_roll and None not in user_answers:
+                score = 0
+                detailed_report_text = ""
+                correct_answers = current_quiz_df['Correct Answer (Full Text)'].astype(str).str.strip().values
                 
-                if user_ans == correct_ans:
-                    score += 1
-                    status = "✅ Correct"
-                else:
-                    status = f"❌ Wrong (Correct: {correct_ans})"
-                detailed_report_text += f"Q: {row['Question']}\nYour Ans: {user_ans}\nStatus: {status}\n\n"
-            
-            st.success(f"🎉 Result: {score}/{len(current_quiz_df)}")
-            
-            # Google Sheet Update
-            with st.spinner("Saving data to Excel..."):
-                GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzucsekDDlyax6P8ZUUZgSWYjX55P4n6jRKM6YzZe35wxQ0D5ldPLmTcYfkCMJOLlTV/exec"
-                safe_name = urllib.parse.quote(str(student_name))
-                safe_div = urllib.parse.quote(str(student_div))
-                safe_roll = urllib.parse.quote(str(student_roll))
-                safe_test = urllib.parse.quote(f"{selected_chapter} - {selected_part}")
-                safe_score = urllib.parse.quote(str(score))
-                
-                final_url = f"{GOOGLE_SHEET_URL}?name={safe_name}&div={safe_div}&roll={safe_roll}&test={safe_test}&score={safe_score}"
-                
-                try:
-                    res = requests.get(final_url)
-                    if res.status_code == 200:
-                        st.info("📊 तुमचा निकाल Excel मध्ये जतन झाला आहे.")
+                for idx, (i, row) in enumerate(current_quiz_df.iterrows()):
+                    user_ans = str(user_answers[idx]).strip()
+                    correct_ans = str(correct_answers[idx]).strip()
+                    
+                    if user_ans == correct_ans:
+                        score += 1
+                        status = "✅ Correct"
                     else:
-                        st.error("⚠️ Excel मध्ये सेव्ह करताना अडचण आली.")
-                except Exception as e:
-                    st.error(f"⚠️ Excel Connection Error: {e}")
-            
-            # Send Emails
-            send_detailed_email(TEACHER_EMAIL, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, True)
-            
-            if student_email:
-                send_detailed_email(student_email, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, False)
-                st.info(f"📧 Detailed report sent to {student_email}")
-            
-            st.markdown("---")
-            st.markdown("### 📊 Detailed Performance:")
-            for idx, (i, row) in enumerate(current_quiz_df.reset_index().iterrows()):
-                if str(user_answers[idx]).strip() == correct_answers[idx]:
-                    st.success(f"Q: {row['Question']}\n\n✅ Your Ans: {user_answers[idx]}")
-                else:
-                    st.error(f"Q: {row['Question']}\n\n❌ Your Ans: {user_answers[idx]}\n\n🎯 Correct: {correct_answers[idx]}")
-        else:
-            st.warning("⚠️ Please fill all details and answer all questions.")
+                        status = f"❌ Wrong (Correct: {correct_ans})"
+                    detailed_report_text += f"Q: {row['Question']}\nYour Ans: {user_ans}\nStatus: {status}\n\n"
+                
+                st.success(f"🎉 Result: {score}/{len(current_quiz_df)}")
+                
+                # टायमर क्लिअर करणे (जेणेकरून विद्यार्थी पुन्हा टेस्ट देऊ शकेल)
+                components.html(f"<script>sessionStorage.removeItem('examEndTime_{test_id}');</script>", height=0)
+                
+                # Google Sheet Update
+                with st.spinner("Saving data to Excel..."):
+                    # तुमची दिलेली नवीन लिंक
+                    GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzucsekDDlyax6P8ZUUZgSWYjX55P4n6jRKM6YzZe35wxQ0D5ldPLmTcYfkCMJOLlTV/exec"
+                    safe_name = urllib.parse.quote(str(student_name))
+                    safe_div = urllib.parse.quote(str(student_div))
+                    safe_roll = urllib.parse.quote(str(student_roll))
+                    safe_test = urllib.parse.quote(f"{selected_chapter} - {selected_part}")
+                    safe_score = urllib.parse.quote(str(score))
+                    
+                    final_url = f"{GOOGLE_SHEET_URL}?name={safe_name}&div={safe_div}&roll={safe_roll}&test={safe_test}&score={safe_score}"
+                    
+                    try:
+                        res = requests.get(final_url)
+                        if res.status_code == 200:
+                            st.info("📊 तुमचा निकाल Excel मध्ये जतन झाला आहे.")
+                        else:
+                            st.error("⚠️ Excel मध्ये सेव्ह करताना अडचण आली.")
+                    except Exception as e:
+                        st.error(f"⚠️ Excel Connection Error: {e}")
+                
+                # Send Emails
+                send_detailed_email(TEACHER_EMAIL, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, True)
+                
+                if student_email:
+                    send_detailed_email(student_email, student_name, student_div, student_roll, score, len(current_quiz_df), selected_chapter, selected_part, detailed_report_text, False)
+                    st.info(f"📧 Detailed report sent to {student_email}")
+                
+                st.markdown("---")
+                st.markdown("### 📊 Detailed Performance:")
+                for idx, (i, row) in enumerate(current_quiz_df.reset_index().iterrows()):
+                    if str(user_answers[idx]).strip() == correct_answers[idx]:
+                        st.success(f"Q: {row['Question']}\n\n✅ Your Ans: {user_answers[idx]}")
+                    else:
+                        st.error(f"Q: {row['Question']}\n\n❌ Your Ans: {user_answers[idx]}\n\n🎯 Correct: {correct_answers[idx]}")
+            else:
+                st.warning("⚠️ Please fill all details and answer all questions.")
