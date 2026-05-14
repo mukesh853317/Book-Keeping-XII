@@ -123,7 +123,7 @@ if df is not None:
             is_valid_roll = student_roll.isdigit()
             
             # --- फेक ईमेल डोमेन चेक (फक्त gmail किंवा yahoo अलाऊ करणे) ---
-            valid_domains = ["@gmail.com", "@yahoo.com", "@outlook.com", "@rediffmail,com"]
+            valid_domains = ["@gmail.com", "@yahoo.com", "@outlook.com", "@rediffmail.com"]
             is_real_domain = any(student_email.lower().endswith(d) for d in valid_domains)
             
             if not student_name or not student_div or not student_roll or not student_email or not exam_pin_input:
@@ -178,7 +178,7 @@ if df is not None:
         
         user_answers = []
         for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
-            st.write(f"**Q: {idx}.{row['Question']}**")
+            st.write(f"**Q: {idx}. {row['Question']}**")
             
             raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
             
@@ -260,26 +260,19 @@ if df is not None:
         test_id = f"{selected_chapter}_{selected_part}".replace(" ", "_")
         components.html(f"<script>sessionStorage.removeItem('examEndTime_{test_id}');</script>", height=0)
         
-        st.success(f"🎉 Result: {st.session_state.score}/{st.session_state.total_questions}")
+        # फक्त स्कोर दाखवणे 
+        st.success(f"🎉 Final Score: {st.session_state.score} / {st.session_state.total_questions}")
         
         if st.session_state.sheet_success:
-            st.info("📊 Your result has been successfully saved in Excel.")
-        else:
-            st.error("⚠️ Error occurred while saving to Excel.")
+            st.info("📊 Your result has been successfully saved in the system.")
             
         if st.session_state.student_email and st.session_state.email_sent:
-            st.info(f"📧 Detailed report sent to {st.session_state.student_email}")
+            st.success(f"📧 The detailed Answer Key has been sent securely to your email: {st.session_state.student_email}")
             
         st.markdown("---")
-        st.markdown("### 📊 Detailed Performance:")
-        
-        for res in st.session_state.results_list:
-            if res['is_correct']:
-                st.success(f"Q: {res['q']}\n\n✅ Your Ans: {res['user_ans']}")
-            else:
-                st.error(f"Q: {res['q']}\n\n❌ Your Ans: {res['user_ans']}\n\n🎯 Correct: {res['correct_ans']}")
-        
+        st.warning("🔒 **Strict Security Protocol:** To prevent cheating, the detailed answer key is not displayed on the screen. Please check your registered email inbox to view your correct/wrong answers.")
         st.markdown("---")
+        
         if st.button("🔄 Take Another Test"):
             st.session_state.test_status = 'not_started'
             st.rerun()
