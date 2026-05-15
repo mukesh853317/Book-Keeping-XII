@@ -65,22 +65,33 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝", layout="centered")
 
 # --- CUSTOM CSS (Dark/Light Mode Compatible) ---
+# --- CUSTOM CSS (बॅकग्राउंड इमेज आणि आकर्षक लूक) ---
 st.markdown("""
     <style>
-    /* मुख्य टायटल (थीमच्या कलरनुसार बदलेल) */
+    /* वेबसाईटच्या बॅकग्राउंडला पुस्तकांचे चित्र आणि त्यावर हलकासा पांढरा पडदा (वाचायला सोपे जावे म्हणून) */
+    .stApp {
+        background-image: linear-gradient(rgba(240, 244, 248, 0.85), rgba(240, 244, 248, 0.85)), url("https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1920&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    
+    /* मुख्य टायटल */
     h1 {
-        color: var(--primary-color);
+        color: #1A5276;
         text-align: center;
         font-family: 'Arial Black', sans-serif;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
-    /* प्रश्नांसाठी कार्ड लेआऊट (डार्क/लाईट मोडनुसार आपोआप रंग बदलेल) */
+    
+    /* प्रश्नांसाठी पांढरे कार्ड */
     div.stRadio > div {
-        background-color: var(--secondary-background-color); 
-        color: var(--text-color);
+        background-color: #ffffff;
+        color: #000000;
         padding: 20px;
         border-radius: 12px;
-        border-left: 6px solid var(--primary-color);
-        box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+        border-left: 6px solid #2980B9;
+        box-shadow: 2px 4px 10px rgba(0,0,0,0.15);
         margin-bottom: 15px;
     }
     </style>
