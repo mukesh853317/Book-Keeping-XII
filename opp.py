@@ -64,45 +64,24 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 # -----------------------------------------------------
 st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝", layout="centered")
 
-# --- CUSTOM CSS (आकर्षक लूकसाठी डिझाईन) ---
+# --- CUSTOM CSS (Dark/Light Mode Compatible) ---
 st.markdown("""
     <style>
-    /* मुख्य बॅकग्राउंड */
-    .stApp {
-        background-color: #f0f4f8;
-    }
-    /* मुख्य टायटल */
+    /* मुख्य टायटल (थीमच्या कलरनुसार बदलेल) */
     h1 {
-        color: #1A5276;
+        color: var(--primary-color);
         text-align: center;
         font-family: 'Arial Black', sans-serif;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
-    /* प्रश्नांसाठी पांढरे कार्ड (Card Layout) */
+    /* प्रश्नांसाठी कार्ड लेआऊट (डार्क/लाईट मोडनुसार आपोआप रंग बदलेल) */
     div.stRadio > div {
-        background-color: #ffffff;
+        background-color: var(--secondary-background-color); 
+        color: var(--text-color);
         padding: 20px;
         border-radius: 12px;
-        border-left: 6px solid #2980B9;
-        box-shadow: 2px 4px 10px rgba(0,0,0,0.08);
+        border-left: 6px solid var(--primary-color);
+        box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
         margin-bottom: 15px;
-    }
-    /* Submit बटण डिझाईन */
-    div.stButton > button {
-        background-color: #27AE60;
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 8px;
-        border: none;
-        width: 100%;
-        padding: 10px;
-        transition: 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: #1E8449;
-        color: white;
-        box-shadow: 0px 4px 10px rgba(0,255,0,0.2);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -154,7 +133,8 @@ if df is not None:
     st.markdown("---")
 
     if st.session_state.test_status == 'not_started':
-        if st.button("🟢 Start Test"):
+        # Start Test बटण पूर्ण रुंदीचे 
+        if st.button("🟢 Start Test", use_container_width=True):
             email_pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$"
             is_valid_email = re.match(email_pattern, student_email)
             is_valid_roll = student_roll.isdigit()
@@ -177,8 +157,9 @@ if df is not None:
     elif st.session_state.test_status == 'in_progress':
         test_id = f"{selected_chapter}_{selected_part}".replace(" ", "_")
         
+        # टायमर सुद्धा डार्क मोडमध्ये चांगला दिसेल असा
         timer_code = f"""
-        <div style="background-color:#1B4F72; color:white; padding:10px; border-radius:8px; text-align:center; font-size:22px; font-weight:bold; font-family:sans-serif; border: 2px solid #AED6F1; box-shadow: 2px 2px 5px grey;">
+        <div style="background-color: var(--primary-color); color: white; padding:10px; border-radius:8px; text-align:center; font-size:22px; font-weight:bold; font-family:sans-serif; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
             <span id="time">Loading Timer...</span>
         </div>
         <script>
@@ -229,7 +210,8 @@ if df is not None:
             user_answers.append(ans)
             st.write("")
 
-        if st.button("🚀 Submit Exam"):
+        # Submit बटण अधिक आकर्षक आणि full width
+        if st.button("🚀 Submit Exam", type="primary", use_container_width=True):
             if None not in user_answers:
                 score = 0
                 detailed_report_text = ""
@@ -303,8 +285,8 @@ if df is not None:
         st.warning("🔒 **Strict Security Protocol:** Please check your registered email inbox to view your Detailed Result.")
         st.markdown("---")
         
-        if st.button("🔄 Take Another Test"):
+        if st.button("🔄 Take Another Test", use_container_width=True):
             st.session_state.test_status = 'not_started'
             st.rerun()
 
-    st.markdown("<br><hr><p style='text-align: center; color: gray; font-size: 16px;'>Developed with ❤️ by <b>Mukesh Sir (9130103386)</b></p>", unsafe_allow_html=True)
+    st.markdown("<br><hr><p style='text-align: center; color: var(--text-color); font-size: 16px;'>Developed with ❤️ by <b>Mukesh Sir (9130103386)</b></p>", unsafe_allow_html=True)
