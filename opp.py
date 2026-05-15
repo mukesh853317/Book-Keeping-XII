@@ -62,8 +62,53 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 # -----------------------------------------------------
 # 2. Website Interface & Session State Initialization
 # -----------------------------------------------------
-st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝")
-st.sidebar.title("📚Mitradnya Publication's Online Test Series📚" "👨‍🏫Developed by: Mukesh Sir👨‍🏫")
+st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝", layout="centered")
+
+# --- CUSTOM CSS (आकर्षक लूकसाठी डिझाईन) ---
+st.markdown("""
+    <style>
+    /* मुख्य बॅकग्राउंड */
+    .stApp {
+        background-color: #f0f4f8;
+    }
+    /* मुख्य टायटल */
+    h1 {
+        color: #1A5276;
+        text-align: center;
+        font-family: 'Arial Black', sans-serif;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    /* प्रश्नांसाठी पांढरे कार्ड (Card Layout) */
+    div.stRadio > div {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 6px solid #2980B9;
+        box-shadow: 2px 4px 10px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+    }
+    /* Submit बटण डिझाईन */
+    div.stButton > button {
+        background-color: #27AE60;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 8px;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        transition: 0.3s;
+    }
+    div.stButton > button:hover {
+        background-color: #1E8449;
+        color: white;
+        box-shadow: 0px 4px 10px rgba(0,255,0,0.2);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+# -------------------------------------------
+
+st.sidebar.title("📚Mitradnya Publication's Online Test Series📚\n\n👨‍🏫Developed by: Mukesh Sir👨‍🏫")
 
 if 'test_status' not in st.session_state:
     st.session_state.test_status = 'not_started' 
@@ -166,7 +211,7 @@ if df is not None:
         
         user_answers = []
         for idx, (i, row) in enumerate(current_quiz_df.iterrows(), 1):
-            st.write(f"**Q: {idx}. {row['Question']}**")
+            st.write(f"**Q {idx}. {row['Question']}**")
             
             raw_options = [str(row['Option A']), str(row['Option B']), str(row['Option C']), str(row['Option D'])]
             unique_options = []
@@ -215,9 +260,8 @@ if df is not None:
                     safe_roll = urllib.parse.quote(str(student_roll))
                     safe_test = urllib.parse.quote(f"{selected_chapter} - {selected_part}")
                     safe_score = urllib.parse.quote(str(score))
-                    safe_email = urllib.parse.quote(str(student_email))  # <-- ईमेल ऍड केला
+                    safe_email = urllib.parse.quote(str(student_email))  
                     
-                    # ईमेल लिंक मध्ये जोडला 
                     final_url = f"{GOOGLE_SHEET_URL}?name={safe_name}&div={safe_div}&roll={safe_roll}&test={safe_test}&score={safe_score}&email={safe_email}"
                     
                     try:
