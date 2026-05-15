@@ -63,8 +63,7 @@ def send_detailed_email(receiver_email, student_name, div, roll, score, total, c
 # 2. Website Interface & Session State Initialization
 # -----------------------------------------------------
 st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="📝")
-st.sidebar.title("📚 Mitradnya Publication's Online Test Series 📚")
-st.sidebar.markdown("👨‍🏫 **Developed by: Mukesh Sir (With Help of Mitradnya Publication's)** 👨‍🏫")
+st.sidebar.title("📚Mitradnya Publication's Online Test Series📚" "👨‍🏫Developed by: Mukesh Sir👨‍🏫")
 
 if 'test_status' not in st.session_state:
     st.session_state.test_status = 'not_started' 
@@ -209,8 +208,7 @@ if df is not None:
                 
                 with st.spinner("Saving data to Excel..."):
                     
-                    # ⚠️ महत्वाची सूचना: 'YOUR_NEW_LINK_HERE' च्या जागी तुम्ही स्टेप 2 मध्ये काढलेली नवीन लिंक टाका.
-                    GOOGLE_SHEET_URL = "YOUR_NEW_LINK_HERE"
+                    GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw3wvGw7hDYyAQIKBL1Rd-jTCP8DwzLzGGITCKTZwbCDMXaInzi3t2vyU4ipzz9SM9-/exec"
                     
                     safe_name = urllib.parse.quote(str(student_name))
                     safe_div = urllib.parse.quote(str(student_div))
