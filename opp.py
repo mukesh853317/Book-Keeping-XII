@@ -67,11 +67,13 @@ st.set_page_config(page_title="📚 Mukesh Sir's Online Exam 📚", page_icon="�
 # --- CUSTOM CSS (Dark/Light Mode Compatible) ---
 st.markdown("""
     <style>
+    /* मुख्य टायटल (थीमच्या कलरनुसार बदलेल) */
     h1 {
         color: var(--primary-color);
         text-align: center;
         font-family: 'Arial Black', sans-serif;
     }
+    /* प्रश्नांसाठी कार्ड लेआऊट (डार्क/लाईट मोडनुसार आपोआप रंग बदलेल) */
     div.stRadio > div {
         background-color: var(--secondary-background-color); 
         color: var(--text-color);
@@ -118,107 +120,44 @@ if df is not None:
     st.write(f"**{selected_part} (20 Marks / 20 Minutes)**")
     
     if st.session_state.test_status == 'not_started':
-        tab1, tab2 = st.tabs(["📝 Exam Portal", "📖 Study Room (Notes)"])
+        st.info("⚠️ Instruction: Please enter your correct details and the Exam PIN provided by Mukesh Sir.")
         
-        # --- टॅब १: परीक्षेचा भाग ---
-        with tab1:
-            st.info("⚠️ Instruction: Please enter your correct details and the Exam PIN provided by Mukesh Sir.")
-            
-            student_name = st.text_input("👤 Full Name (e.g., Rahul Patil):")
-            student_div = st.text_input("🏫 Division (A/B/C):")
-            student_roll = st.text_input("🔢 Roll No (Numbers Only):")
-            student_email = st.text_input("📧 Email ID (For Result):")
-            exam_pin_input = st.text_input("🔑 Exam PIN (Secret Password):", type="password")
-            
-            st.markdown("---")
-            
-            if st.button("🟢 Start Test", use_container_width=True):
-                email_pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$"
-                is_valid_email = re.match(email_pattern, student_email)
-                is_valid_roll = student_roll.isdigit()
-                
-                valid_domains = ["@gmail.com", "@yahoo.com", "@outlook.com", "@rediffmail.com"]
-                is_real_domain = any(student_email.lower().endswith(d) for d in valid_domains)
-                
-                if not student_name or not student_div or not student_roll or not student_email or not exam_pin_input:
-                    st.warning("⚠️ Please fill in all the details, including the Exam PIN.")
-                elif not is_valid_roll:
-                    st.error("❌ Invalid Roll No! Please enter numbers only (e.g., 15).")
-                elif not is_valid_email or not is_real_domain:
-                    st.error("❌ Fake Email Detected! Please use a real valid email address.")
-                elif exam_pin_input != SECRET_EXAM_PIN:
-                    st.error("❌ Incorrect Exam PIN! You cannot start the test without the correct password.")
-                else:
-                    st.session_state.test_status = 'in_progress'
-                    st.rerun()
-                    
-# --- टॅब २: अभ्यासाची खोली (Dynamic Tools.csv System) ---
-        with tab2:
-            st.markdown("### 📖 Mitradnya Interactive Study Room")
-            
-            try:
-                tools_df = pd.read_csv('Tools.csv', encoding='utf-8')
-                
-                adjustment_list = tools_df['Topic_Name'].tolist()
-                selected_adj = st.selectbox("🔍 Select Adjustment to Study & Practice:", adjustment_list)
-                
-                adj_data = tools_df[tools_df['Topic_Name'] == selected_adj].iloc[0]
-                
-                # --- स्मार्ट अपडेट: सिस्टीम आता आपोआप 'images/' फोल्डरमधून फाईल घेईल ---
-                img_file = f"images/{adj_data['Image_File'].replace('images/', '')}"
-                
-                calc_prompt = adj_data['Calculator_Prompt']
-                
-                st.markdown("---")
-                
-                # १. इन्फोग्राफिक इमेज दाखवणे आणि टेस्टिंग (Detective Code)
-                import os
-                if os.path.exists(img_file):
-                    st.image(img_file, caption=f"Visualization: {selected_adj} by Mukesh Sir", use_container_width=True)
-                else:
-                    st.error(f"⚠️ चित्र सापडले नाही! (Image Not Found)")
-                    st.warning(f"🔎 सिस्टीम हा फोटो इथे शोधत आहे: **`{img_file}`**")
-                    st.info("💡 कृपया GitHub वर तपासा: \n१. फोल्डरचे नाव 'images' (सर्व small letters) आहे का?\n२. फोटोचे नाव अगदी वर दाखवल्याप्रमाणेच (स्पेलिंग आणि स्पेस) आहे का?")
-                    
-                st.markdown("---")
-                
-                # २. मॅजिक कॅल्क्युलेटर दाखवणे
-                st.markdown(f"### 🎮 Interactive Calculator: {selected_adj}")
-                st.info("💡 Trick: Enter your values below to see how the final answer is calculated.")
-                
-                chameleon_html = f"""
-                <iframe srcdoc="
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <script type='module'>
-                            import {{ render }} from 'https://cdn.jsdelivr.net/gh/mimatr-com/chameleon-dist@latest/dist/index.js';
-                            const chameleonData = {{
-                                'component': 'LlmGeneratedComponent',
-                                'props': {{
-                                    'height': '650px',
-                                    'prompt': `{calc_prompt}`
-                                }}
-                            }};
-                            document.getElementById('root').innerHTML = render(chameleonData);
-                        </script>
-                    </head>
-                    <body style='margin:0; padding:0;'>
-                        <div id='root'></div>
-                    </body>
-                    </html>
-                " style="width: 100%; height: 660px; border: none; overflow: hidden;"></iframe>
-                """
-                components.html(chameleon_html, height=660)
+    student_name = st.text_input("👤 Full Name (e.g., Rahul Patil):", disabled=sidebar_disabled)
+    student_div = st.text_input("🏫 Division (A/B/C):", disabled=sidebar_disabled)
+    student_roll = st.text_input("🔢 Roll No (Numbers Only):", disabled=sidebar_disabled)
+    student_email = st.text_input("📧 Email ID (For Result):", disabled=sidebar_disabled)
+    
+    if st.session_state.test_status == 'not_started':
+        exam_pin_input = st.text_input("🔑 Exam PIN (Secret Password):", type="password")
+    
+    st.markdown("---")
 
-            except FileNotFoundError:
-                st.warning("⚠️ 'Tools.csv' file not found. Please create and upload 'Tools.csv' on GitHub.")
-            except Exception as e:
-                st.info("📌 Detailed Visual Notes and Interactive Calculators for this chapter will be uploaded soon by Mukesh Sir.")
+    if st.session_state.test_status == 'not_started':
+        # Start Test बटण पूर्ण रुंदीचे 
+        if st.button("🟢 Start Test", use_container_width=True):
+            email_pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$"
+            is_valid_email = re.match(email_pattern, student_email)
+            is_valid_roll = student_roll.isdigit()
+            
+            valid_domains = ["@gmail.com", "@yahoo.com", "@outlook.com", "@rediffmail.com"]
+            is_real_domain = any(student_email.lower().endswith(d) for d in valid_domains)
+            
+            if not student_name or not student_div or not student_roll or not student_email or not exam_pin_input:
+                st.warning("⚠️ Please fill in all the details, including the Exam PIN.")
+            elif not is_valid_roll:
+                st.error("❌ Invalid Roll No! Please enter numbers only (e.g., 15).")
+            elif not is_valid_email or not is_real_domain:
+                st.error("❌ Fake Email Detected! Please use a real valid email address (like @gmail.com or @yahoo.com).")
+            elif exam_pin_input != SECRET_EXAM_PIN:
+                st.error("❌ Incorrect Exam PIN! You cannot start the test without the correct password.")
+            else:
+                st.session_state.test_status = 'in_progress'
+                st.rerun()
 
     elif st.session_state.test_status == 'in_progress':
         test_id = f"{selected_chapter}_{selected_part}".replace(" ", "_")
         
+        # टायमर सुद्धा डार्क मोडमध्ये चांगला दिसेल असा
         timer_code = f"""
         <div style="background-color: var(--primary-color); color: white; padding:10px; border-radius:8px; text-align:center; font-size:22px; font-weight:bold; font-family:sans-serif; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
             <span id="time">Loading Timer...</span>
@@ -271,6 +210,7 @@ if df is not None:
             user_answers.append(ans)
             st.write("")
 
+        # Submit बटण अधिक आकर्षक आणि full width
         if st.button("🚀 Submit Exam", type="primary", use_container_width=True):
             if None not in user_answers:
                 score = 0
@@ -294,6 +234,7 @@ if df is not None:
                     results_list.append({'q': row['Question'], 'user_ans': user_ans, 'correct_ans': correct_ans, 'is_correct': is_correct})
                 
                 with st.spinner("Saving data to Excel..."):
+                    
                     GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw3wvGw7hDYyAQIKBL1Rd-jTCP8DwzLzGGITCKTZwbCDMXaInzi3t2vyU4ipzz9SM9-/exec"
                     
                     safe_name = urllib.parse.quote(str(student_name))
