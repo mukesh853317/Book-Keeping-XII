@@ -152,7 +152,7 @@ if df is not None:
                     st.session_state.test_status = 'in_progress'
                     st.rerun()
                     
-        # --- टॅब २: अभ्यासाची खोली (Dynamic Tools.csv System) ---
+# --- टॅब २: अभ्यासाची खोली (Dynamic Tools.csv System) ---
         with tab2:
             st.markdown("### 📖 Mitradnya Interactive Study Room")
             
@@ -171,11 +171,14 @@ if df is not None:
                 
                 st.markdown("---")
                 
-                # १. इन्फोग्राफिक इमेज दाखवणे
-                try:
+                # १. इन्फोग्राफिक इमेज दाखवणे आणि टेस्टिंग (Detective Code)
+                import os
+                if os.path.exists(img_file):
                     st.image(img_file, caption=f"Visualization: {selected_adj} by Mukesh Sir", use_container_width=True)
-                except Exception:
-                    st.warning(f"⚠️ Image loading... (कृपया खात्री करा की {img_file} फाईल GitHub च्या 'images' फोल्डरमध्ये अपलोड केली आहे)")
+                else:
+                    st.error(f"⚠️ चित्र सापडले नाही! (Image Not Found)")
+                    st.warning(f"🔎 सिस्टीम हा फोटो इथे शोधत आहे: **`{img_file}`**")
+                    st.info("💡 कृपया GitHub वर तपासा: \n१. फोल्डरचे नाव 'images' (सर्व small letters) आहे का?\n२. फोटोचे नाव अगदी वर दाखवल्याप्रमाणेच (स्पेलिंग आणि स्पेस) आहे का?")
                     
                 st.markdown("---")
                 
