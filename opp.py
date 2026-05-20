@@ -116,7 +116,7 @@ if df is not None:
     current_quiz_df = chapter_questions.iloc[start_idx:end_idx]
     
     st.title("📚 Mukesh Sir's Online Examination Portal")
-    st.subheader(f"Topic: {selected_chapter}")
+    st.subheader(f"{selected_chapter}")
     st.write(f"**{selected_part} (20 Marks / 20 Minutes)**")
     
     if st.session_state.test_status == 'not_started':
